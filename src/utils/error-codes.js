@@ -1,3 +1,10 @@
+const errorMessages = {
+    EVENT_NOT_FOUND: 'Event not found',
+    EVENT_CODE_ALREADY_EXISTS: 'Event code already exists',
+    EVENT_INACTIVE: 'Event is not active',
+    USER_ALREADY_CHECKED_IN: 'User already checked in to this event'
+};
+
 export const errorCodes = {
     VALIDATION_ERROR: 'VALIDATION_ERROR',
     INVALID_EMAIL: 'INVALID_EMAIL',
@@ -15,6 +22,13 @@ export const errorCodes = {
     
     CATEGORY_NOT_FOUND: 'CATEGORY_NOT_FOUND',
     CATEGORY_NAME_ALREADY_EXISTS: 'CATEGORY_NAME_ALREADY_EXISTS',
+    
+    EVENT_NOT_FOUND: 'EVENT_NOT_FOUND',
+    EVENT_CODE_ALREADY_EXISTS: 'EVENT_CODE_ALREADY_EXISTS',
+    EVENT_INACTIVE: 'EVENT_INACTIVE',
+    
+    USER_ALREADY_CHECKED_IN: 'USER_ALREADY_CHECKED_IN',
+    
     FORBIDDEN: 'FORBIDDEN',
     
     TOKEN_REQUIRED: 'TOKEN_REQUIRED',
@@ -65,3 +79,8 @@ function getValidationErrorCode(detail) {
     
     return errorCodes.VALIDATION_ERROR;
 }
+
+errorCodes.EVENT_NOT_FOUND = createErrorResponse('EVENT_NOT_FOUND', errorMessages.EVENT_NOT_FOUND);
+errorCodes.EVENT_CODE_ALREADY_EXISTS = createErrorResponse('EVENT_CODE_ALREADY_EXISTS', errorMessages.EVENT_CODE_ALREADY_EXISTS);
+errorCodes.EVENT_INACTIVE = createErrorResponse('EVENT_INACTIVE', errorMessages.EVENT_INACTIVE);
+errorCodes.USER_ALREADY_CHECKED_IN = createErrorResponse('USER_ALREADY_CHECKED_IN', errorMessages.USER_ALREADY_CHECKED_IN);

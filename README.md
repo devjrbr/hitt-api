@@ -185,6 +185,10 @@ Quando há campos inválidos, retorna com `details`:
 - `FORBIDDEN` - Sem permissão para esta ação
 - `TOKEN_REQUIRED` - Token de acesso obrigatório
 - `UNAUTHORIZED` - Token inválido ou usuário sem permissão
+- `EVENT_NOT_FOUND` - Evento não encontrado
+- `EVENT_CODE_ALREADY_EXISTS` - Código do evento já existe
+- `EVENT_INACTIVE` - Evento não está ativo
+- `USER_ALREADY_CHECKED_IN` - Usuário já fez check-in neste evento
 
 ## Configuração
 
@@ -359,3 +363,86 @@ Authorization: Bearer {token}
 **Autenticado (qualquer role):**
 - GET /category
 - GET /category/:id
+- POST /checkin
+- GET /checkin/history
+- GET /event
+
+## Check-in em Eventos
+
+### Como funciona:
+
+1. **Admin cria evento** com código único (ex: "HITT2024")
+2. **Usuário faz check-in** enviando o código do evento
+3. **Sistema valida** e registra presença permanentemente
+4. **Usuário pode consultar** seu histórico de eventos
+
+### Rotas de Check-in:
+
+**Fazer check-in**
+```
+POST /checkin
+Authorization: Bearer {token}
+{
+  "code": "HITT2024"
+}
+```
+*Resposta de sucesso:*
+```json
+{
+  "id": 1,
+  "event": {
+    "id": 1,
+    "name": "HITT Conference 2024",
+    "code": "HITT2024",
+    "event_date": "2024-03-15T09:00:00.000Z"
+  },
+  "checkin_at": "2024-03-15T09:30:00.000Z"
+}
+```
+
+
+
+**Histórico de check-ins do usuário**
+```
+GET /checkin/history
+Authorization: Bearer {token}
+```
+
+### Gestão de Eventos (ADMIN):
+
+**Criar evento**
+```
+POST /event
+Authorization: Bearer {token}
+{
+  "name": "HITT Conference 2024",
+  "description": "Conferência anual de tecnologia",
+  "code": "HITT2024",
+  "event_date": "2024-03-15T09:00:00.000Z",
+  "max_participants": 500
+}
+```
+
+**Listar participantes do evento**
+```
+GET /event/:id/participants
+Authorization: Bearer {token}
+```
+
+**Estatísticas do evento**
+```
+GET /event/:id/stats
+Authorization: Bearer {token}
+```
+*Resposta:*
+```json
+{
+  "total_checkins": 150
+}
+```
+
+### Códigos de Erro Check-in:
+- `EVENT_NOT_FOUND`: Código do evento inválido
+- `EVENT_INACTIVE`: Evento não está ativo
+- `USER_ALREADY_CHECKED_IN`: Usuário já fez check-in neste evento
+- `EVENT_CODE_ALREADY_EXISTS`: Código do evento já existe (criação)

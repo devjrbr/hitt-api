@@ -5,3 +5,5 @@ export * from './validate-auth.js';
 export * from './auth.js';
 export * from "./validate-category.js";
 export * from "./admin-auth.js";
+export * from "./validate-checkin.js";
+export * from "./validate-event.js";
