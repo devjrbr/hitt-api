@@ -103,14 +103,45 @@ Authorization: Bearer {token}
 - **Código de login**: 6 dígitos, expira em 10 minutos
 - **Campos obrigatórios**: validados automaticamente
 
-## Códigos de Erro
+## Padrão de Erros
 
-- `USER_NOT_FOUND` - Usuário não encontrado
+### Erros Simples
+Formato padrão para a maioria dos erros:
+```json
+{
+  "code": "EMAIL_ALREADY_EXISTS",
+  "message": "This email is already registered"
+}
+```
+
+### Erros de Validação
+Quando há campos inválidos, retorna com `details`:
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Validation failed",
+  "details": [
+    {
+      "field": "email",
+      "message": "\"email\" must be a valid email",
+      "code": "INVALID_EMAIL"
+    }
+  ]
+}
+```
+
+### Códigos principais:
 - `EMAIL_ALREADY_EXISTS` - Email já cadastrado
-- `CPF_ALREADY_EXISTS` - CPF já cadastrado
-- `EMAIL_FAILED` - Falha no envio de email
+- `CPF_ALREADY_EXISTS` - CPF já cadastrado  
+- `DUPLICATE_ENTRY` - Informação duplicada (genérico)
+- `USER_NOT_FOUND` - Usuário não encontrado
 - `INVALID_TOKEN` - Código inválido ou expirado
-- `VALIDATION_ERROR` - Dados inválidos
+- `EMAIL_FAILED` - Falha no envio de email
+- `VALIDATION_ERROR` - Dados inválidos (com detalhes por campo)
+- `INVALID_EMAIL` - Email inválido (dentro de details)
+- `INVALID_CPF` - CPF inválido (dentro de details)
+- `REQUIRED_FIELD` - Campo obrigatório (dentro de details)
+- `INTERNAL_SERVER_ERROR` - Erro interno do servidor
 
 ## Configuração
 
