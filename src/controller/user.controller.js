@@ -143,9 +143,9 @@ export async function handleUpdateProfile(req, res) {
             });
         }
         
-
-        const newToken = generateUserJWT(user);
-        return res.status(statusCodes.OK).json({ token: newToken });
+        
+        const { token, login_code, ...profile } = user;
+        return res.status(statusCodes.OK).json(profile);
     } catch (error) {
         if (error.code === 'EMAIL_DUPLICATE') {
             return res.status(statusCodes.CONFLICT).json({
