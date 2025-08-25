@@ -26,15 +26,28 @@ O sistema permite cadastrar e gerenciar usuários de três tipos: **STARTUP**, *
 
 ### Autenticação
 
-**Solicitar código de login**
+**1. Solicitar código de login**
 ```
 POST /auth
 {
   "email": "usuario@email.com"
 }
 ```
+*Resposta de sucesso:*
+```json
+{
+  "message": "Verification code sent to email"
+}
+```
+*Resposta de erro:*
+```json
+{
+  "code": "USER_NOT_FOUND",
+  "message": "User not found"
+}
+```
 
-**Fazer login com código**
+**2. Fazer login com código**
 ```
 POST /auth/code
 {
@@ -42,6 +55,31 @@ POST /auth/code
   "code": "123456"
 }
 ```
+*Resposta de sucesso:*
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+*Resposta de erro:*
+```json
+{
+  "code": "INVALID_TOKEN",
+  "message": "Invalid verification code"
+}
+```
+
+**3. Usar o token nas requisições autenticadas**
+
+Para acessar rotas protegidas, envie o token no header `Authorization`:
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+**Importante:** 
+- Use exatamente `Bearer ` (com espaço) seguido do token
+- O token não expira (válido permanentemente)
 
 ### Usuários
 
@@ -133,7 +171,7 @@ Quando há campos inválidos, retorna com `details`:
 ### Códigos principais:
 - `EMAIL_ALREADY_EXISTS` - Email já cadastrado
 - `CPF_ALREADY_EXISTS` - CPF já cadastrado  
-- `DUPLICATE_ENTRY` - Informação duplicada (genérico)
+- `DUPLICATE_ENTRY` - Informação duplicada (genérico, não mapeado) 
 - `USER_NOT_FOUND` - Usuário não encontrado
 - `INVALID_TOKEN` - Código inválido ou expirado
 - `EMAIL_FAILED` - Falha no envio de email

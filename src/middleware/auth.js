@@ -4,20 +4,22 @@ import { createErrorResponse, errorCodes } from '../utils/error-codes.js';
 
 export function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = authHeader && authHeader.replace('Bearer', '').trim();
 
     if (!token) {
-        return res.status(statusCodes.BAD_REQUEST).json(
-            createErrorResponse(errorCodes.TOKEN_REQUIRED, 'Access token is required')
-        );
+        return res.status(statusCodes.BAD_REQUEST).json({
+            code: errorCodes.TOKEN_REQUIRED,
+            message: 'Access token is required'
+        });
     }
 
     const decoded = verifyJWT(token);
     
     if (!decoded) {
-        return res.status(statusCodes.BAD_REQUEST).json(
-            createErrorResponse(errorCodes.INVALID_TOKEN, 'Invalid or expired token')
-        );
+        return res.status(statusCodes.BAD_REQUEST).json({
+            code: errorCodes.INVALID_TOKEN,
+            message: 'Invalid or expired token'
+        });
     }
 
     req.user = decoded;
