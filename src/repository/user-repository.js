@@ -20,17 +20,24 @@ export async function createUser(userData) {
     
     return { ...savedUser, token };
   } catch (error) {
-    if (error.code === 'ER_DUP_ENTRY') {
-      if (error.message.includes('email')) {
+    if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+      const errorMessage = error.message?.toLowerCase() || '';
+      const errorDetail = error.detail?.toLowerCase() || '';
+      
+      if (errorDetail.includes('key (email)') || errorMessage.includes('email')) {
         const duplicateError = new Error('Email already exists');
         duplicateError.code = 'EMAIL_DUPLICATE';
         throw duplicateError;
       }
-      if (error.message.includes('cpf')) {
+      if (errorDetail.includes('key (cpf)') || errorMessage.includes('cpf')) {
         const duplicateError = new Error('CPF already exists');
         duplicateError.code = 'CPF_DUPLICATE';
         throw duplicateError;
       }
+      
+      const duplicateError = new Error('Duplicate entry detected');
+      duplicateError.code = 'DUPLICATE_ENTRY';
+      throw duplicateError;
     }
     throw error;
   }
@@ -43,8 +50,32 @@ export async function findUserById(id) {
 
 export async function updateUser(id, userData) {
   const userRepository = AppDataSource.getRepository(UserDatabase);
-  await userRepository.update(id, userData);
-  return await userRepository.findOne({ where: { id } });
+  
+  try {
+    await userRepository.update(id, userData);
+    return await userRepository.findOne({ where: { id } });
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+      const errorMessage = error.message?.toLowerCase() || '';
+      const errorDetail = error.detail?.toLowerCase() || '';
+      
+      if (errorDetail.includes('key (email)') || errorMessage.includes('email')) {
+        const duplicateError = new Error('Email already exists');
+        duplicateError.code = 'EMAIL_DUPLICATE';
+        throw duplicateError;
+      }
+      if (errorDetail.includes('key (cpf)') || errorMessage.includes('cpf')) {
+        const duplicateError = new Error('CPF already exists');
+        duplicateError.code = 'CPF_DUPLICATE';
+        throw duplicateError;
+      }
+      
+      const duplicateError = new Error('Duplicate entry detected');
+      duplicateError.code = 'DUPLICATE_ENTRY';
+      throw duplicateError;
+    }
+    throw error;
+  }
 }
 
 export async function deleteUser(id) {

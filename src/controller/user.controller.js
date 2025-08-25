@@ -20,14 +20,22 @@ export async function handleCreateUser(req, res) {
         return res.status(statusCodes.CREATED).json({ token: user.token });
     } catch (error) {
         if (error.code === 'EMAIL_DUPLICATE') {
-            return res.status(statusCodes.CONFLICT).json(
-                createErrorResponse(errorCodes.EMAIL_ALREADY_EXISTS, error.message, 'email')
-            );
+            return res.status(statusCodes.CONFLICT).json({
+                code: errorCodes.EMAIL_ALREADY_EXISTS,
+                message: 'This email is already registered'
+            });
         }
         if (error.code === 'CPF_DUPLICATE') {
-            return res.status(statusCodes.CONFLICT).json(
-                createErrorResponse(errorCodes.CPF_ALREADY_EXISTS, error.message, 'cpf')
-            );
+            return res.status(statusCodes.CONFLICT).json({
+                code: errorCodes.CPF_ALREADY_EXISTS,
+                message: 'This CPF is already registered'
+            });
+        }
+        if (error.code === 'DUPLICATE_ENTRY') {
+            return res.status(statusCodes.CONFLICT).json({
+                code: errorCodes.DUPLICATE_ENTRY,
+                message: 'User information already exists in the system'
+            });
         }
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json(
             createErrorResponse(errorCodes.INTERNAL_SERVER_ERROR, error.message)
@@ -129,14 +137,22 @@ export async function handleUpdateProfile(req, res) {
         return res.status(statusCodes.OK).json({ token: newToken });
     } catch (error) {
         if (error.code === 'EMAIL_DUPLICATE') {
-            return res.status(statusCodes.CONFLICT).json(
-                createErrorResponse(errorCodes.EMAIL_ALREADY_EXISTS, error.message, 'email')
-            );
+            return res.status(statusCodes.CONFLICT).json({
+                code: errorCodes.EMAIL_ALREADY_EXISTS,
+                message: 'This email is already registered'
+            });
         }
         if (error.code === 'CPF_DUPLICATE') {
-            return res.status(statusCodes.CONFLICT).json(
-                createErrorResponse(errorCodes.CPF_ALREADY_EXISTS, error.message, 'cpf')
-            );
+            return res.status(statusCodes.CONFLICT).json({
+                code: errorCodes.CPF_ALREADY_EXISTS,
+                message: 'This CPF is already registered'
+            });
+        }
+        if (error.code === 'DUPLICATE_ENTRY') {
+            return res.status(statusCodes.CONFLICT).json({
+                code: errorCodes.DUPLICATE_ENTRY,
+                message: 'User information already exists in the system'
+            });
         }
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json(
             createErrorResponse(errorCodes.INTERNAL_SERVER_ERROR, error.message)

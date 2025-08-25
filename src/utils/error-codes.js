@@ -11,6 +11,7 @@ export const errorCodes = {
     USER_ALREADY_EXISTS: 'USER_ALREADY_EXISTS',
     EMAIL_ALREADY_EXISTS: 'EMAIL_ALREADY_EXISTS',
     CPF_ALREADY_EXISTS: 'CPF_ALREADY_EXISTS',
+    DUPLICATE_ENTRY: 'DUPLICATE_ENTRY',
     
     TOKEN_REQUIRED: 'TOKEN_REQUIRED',
     INVALID_TOKEN: 'INVALID_TOKEN',
@@ -40,15 +41,13 @@ export function createErrorResponse(code, message, field = null) {
 
 export function createValidationErrorResponse(details) {
     return {
-        error: {
-            code: errorCodes.VALIDATION_ERROR,
-            message: 'Validation failed',
-            details: details.map(detail => ({
-                field: detail.path?.[0] || detail.context?.key,
-                message: detail.message,
-                code: getValidationErrorCode(detail)
-            }))
-        }
+        code: errorCodes.VALIDATION_ERROR,
+        message: 'Validation failed',
+        details: details.map(detail => ({
+            field: detail.path?.[0] || detail.context?.key,
+            message: detail.message,
+            code: getValidationErrorCode(detail)
+        }))
     };
 }
 
