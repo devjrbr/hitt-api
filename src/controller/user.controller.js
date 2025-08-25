@@ -1,12 +1,15 @@
 import { getAllUsers, createNewUser, getUserById, updateUserById, deleteUserById } from '../service/index.js';
 import { statusCodes } from '../utils/http.js';
-import { createErrorResponse, errorCodes } from '../utils/error-codes.js';
-import { generateUserJWT } from '../utils/jwt.js';
+import { errorCodes } from '../utils/error-codes.js';
 
 export async function handleGetAllUsers(req, res) {
     try {
         const users = await getAllUsers();
-        return res.status(statusCodes.OK).json(users);
+        const usersWithoutRole = users.map(user => {
+            const { role, ...userWithoutRole } = user;
+            return userWithoutRole;
+        });
+        return res.status(statusCodes.OK).json(usersWithoutRole);
     } catch (error) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             code: errorCodes.INTERNAL_SERVER_ERROR,
@@ -143,9 +146,9 @@ export async function handleUpdateProfile(req, res) {
             });
         }
         
+        
         const { token, login_code, ...profile } = user;
         return res.status(statusCodes.OK).json(profile);
-
     } catch (error) {
         if (error.code === 'EMAIL_DUPLICATE') {
             return res.status(statusCodes.CONFLICT).json({
@@ -165,6 +168,40 @@ export async function handleUpdateProfile(req, res) {
                 message: 'User information already exists in the system'
             });
         }
+        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
+            code: errorCodes.INTERNAL_SERVER_ERROR,
+            message: error.message
+        });
+    }
+}
+
+export async function handlePromoteUser(req, res) {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        
+        if (!['USER', 'ADMIN'].includes(role)) {
+            return res.status(statusCodes.BAD_REQUEST).json({
+                code: errorCodes.VALIDATION_ERROR,
+                message: 'Invalid role. Must be USER or ADMIN'
+            });
+        }
+        
+        const user = await updateUserById(parseInt(id), { role });
+        
+        if (!user) {
+            return res.status(statusCodes.NOT_FOUND).json({
+                code: errorCodes.USER_NOT_FOUND,
+                message: 'User not found'
+            });
+        }
+        
+        const { token, login_code, ...profile } = user;
+        return res.status(statusCodes.OK).json({
+            message: `User role updated to ${role} successfully`,
+            user: profile
+        });
+    } catch (error) {
         return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({
             code: errorCodes.INTERNAL_SERVER_ERROR,
             message: error.message

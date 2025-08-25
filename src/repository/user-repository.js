@@ -4,7 +4,11 @@ import { generateUserJWT } from '../utils/jwt.js';
 
 export async function fetchAllUsers() {
   const userRepository = AppDataSource.getRepository(UserDatabase);
-  return await userRepository.find();
+  return await userRepository.find({
+    where: {
+      role: 'USER'
+    }
+  });
 }
 
 export async function createUser(userData) {

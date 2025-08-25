@@ -1,11 +1,11 @@
 import 'dotenv/config';
 import { DataSource } from "typeorm";
-import { UserDatabase } from '../database/entity/index.js';
+import { UserDatabase, CategoryDatabase } from '../database/entity/index.js';
 
 const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
-  entities: [UserDatabase],
+  entities: [UserDatabase, CategoryDatabase],
   synchronize: true,
   ssl: true
 });

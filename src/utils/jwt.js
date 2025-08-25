@@ -16,12 +16,9 @@ export function verifyJWT(token) {
     }
 }
 
-
 export function generateUserJWT(user) {
     const payload = {
         id: user.id,
-        email: user.email,
-        type: user.type,
         iat: Math.floor(Date.now() / 1000)
     };
     
