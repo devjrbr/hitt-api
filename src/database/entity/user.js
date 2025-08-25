@@ -11,10 +11,10 @@ export default new EntitySchema({
     },
     type: {
       type: "enum",
-      enum: ["STARTUP", "PARCEIRO", "VISITANTE"],
+      enum: ["STARTUP", "PARTNER", "VISITOR"],
       nullable: false,
     },
-    register_code: {
+    registration_code: {
       type: "varchar",
       nullable: true,
       default: "",
@@ -26,32 +26,56 @@ export default new EntitySchema({
     email: {
       type: "varchar",
       nullable: false,
+      unique: true,
     },
     phone: {
       type: "varchar",
       nullable: false,
     },
-    tax_id: {
+    cpf: {
       type: "varchar",
       nullable: false,
+      unique: true,
     },
-    birthday: {
+    birth_date: {
       type: "date",
       nullable: false,
     },
     gender: {
       type: "enum",
-      enum: ["MASCULINO", "FEMININO", "NAO_INFORMAR"],
+      enum: ["MALE", "FEMALE", "NOT_INFORMED"],
       nullable: false,
     },
-    where_from: {
-      type: "enum",
-      enum: ["GOOGLE", "FACEBOOK", "INSTAGRAM", "LINKEDIN", "SITE", "INDICACAO", "OUTROS"],
+    how_did_you_know: {
+      type: "varchar",
       nullable: false,
     },
     newsletter: {
       type: "boolean",
       nullable: false,
+      default: false,
+    },
+    token: {
+      type: "text",
+      nullable: true,
+    },
+    login_code: {
+      type: "varchar",
+      length: 6,
+      nullable: true,
+    },
+    login_code_expires_at: {
+      type: "timestamp",
+      nullable: true,
+    },
+    created_at: {
+      type: "timestamp",
+      default: () => "CURRENT_TIMESTAMP",
+    },
+    updated_at: {
+      type: "timestamp",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
     },
   },
 });

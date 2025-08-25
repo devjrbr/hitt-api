@@ -1,2 +1,6 @@
 /node_modules
 .env
+modules.xml
+vcs.xml
+workspace.xml
+API HITT.postman_collection.json

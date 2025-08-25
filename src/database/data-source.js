@@ -3,20 +3,17 @@ import { DataSource } from "typeorm";
 import { UserDatabase } from '../database/entity/index.js';
 
 const AppDataSource = new DataSource({
-  type: process.env.DB_TYPE,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  type: "postgres",
+  url: process.env.DATABASE_URL,
   entities: [UserDatabase],
   synchronize: true,
+  ssl: true
 });
 
 AppDataSource.initialize()
   .then(() => {
-    console.log("Data Source has been initialized!");
+    
   })
-  .catch((error) => console.error("Error during Data Source initialization:", error));
+  .catch((error) => console.error(`[${new Date().toISOString()}] [msg:"Data Source initialization failed"] [error: ${error.message}]`));
 
 export { AppDataSource };
