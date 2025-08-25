@@ -14,6 +14,12 @@ export default new EntitySchema({
       enum: ["STARTUP", "PARTNER", "VISITOR"],
       nullable: false,
     },
+    role: {
+      type: "enum",
+      enum: ["USER", "ADMIN"],
+      nullable: false,
+      default: "USER",
+    },
     registration_code: {
       type: "varchar",
       nullable: true,

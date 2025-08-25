@@ -180,6 +180,11 @@ Quando há campos inválidos, retorna com `details`:
 - `INVALID_CPF` - CPF inválido (dentro de details)
 - `REQUIRED_FIELD` - Campo obrigatório (dentro de details)
 - `INTERNAL_SERVER_ERROR` - Erro interno do servidor
+- `CATEGORY_NOT_FOUND` - Categoria não encontrada
+- `CATEGORY_NAME_ALREADY_EXISTS` - Nome da categoria já existe
+- `FORBIDDEN` - Sem permissão para esta ação
+- `TOKEN_REQUIRED` - Token de acesso obrigatório
+- `UNAUTHORIZED` - Token inválido ou usuário sem permissão
 
 ## Configuração
 
@@ -207,3 +212,150 @@ A API estará disponível em `http://localhost:3000`
 curl http://localhost:3000/ping
 # Resposta: pong
 ```
+### Categorias
+
+**Listar categorias** (usuário autenticado)
+```
+GET /category
+Authorization: Bearer {token}
+```
+
+**Buscar categoria por ID** (usuário autenticado)
+```
+GET /category/1
+Authorization: Bearer {token}
+```
+
+**Criar categoria** (apenas ADMIN)
+```
+POST /category
+Authorization: Bearer {token}
+{
+  "name": "edtech"
+}
+```
+
+**Atualizar categoria** (apenas ADMIN)
+```
+PUT /category/1
+Authorization: Bearer {token}
+{
+  "name": "fintech"
+}
+```
+
+**Deletar categoria** (apenas ADMIN)
+```
+DELETE /category/1
+Authorization: Bearer {token}
+```
+
+## Permissões
+
+### Níveis de Acesso:
+
+**VISITOR** - Acesso limitado:
+- Ver próprio perfil
+- Atualizar próprio perfil
+
+**STARTUP/PARTNER** - Acesso intermediário:
+- Todas as permissões de VISITOR
+- Ver categorias
+- Funcionalidades específicas do app
+
+**ADMIN** - Acesso administrativo:
+- Todas as permissões anteriores
+- Gerenciar outros usuários (CRUD completo)
+- Gerenciar categorias (CRUD completo)
+- Promover/rebaixar outros usuários
+
+### Rotas Públicas (sem autenticação):
+- `POST /user` - Registro de usuário
+- `POST /auth` - Solicitar código de login
+- `POST /auth/code` - Fazer login
+
+### Rotas Protegidas (requer autenticação):
+- `GET /user/profile` - Ver próprio perfil
+- `PATCH /user` - Atualizar próprio perfil (exceto role)
+- `GET /category` - Listar categorias
+- `GET /category/:id` - Ver categoria específica
+
+### Rotas Administrativas (apenas ADMIN):
+- `GET /user` - Listar todos usuários
+- `GET /user/:id` - Ver usuário específico
+- `PUT /user/:id` - Atualizar qualquer usuário (completo)
+- `PATCH /user/:id` - Atualizar qualquer usuário (parcial, exceto role)
+- `DELETE /user/:id` - Deletar usuário
+- `PATCH /user/:id/promote` - Alterar role do usuário
+- `POST /category` - Criar categoria
+- `PUT /category/:id` - Atualizar categoria
+- `DELETE /category/:id` - Deletar categoria
+
+
+## Autenticação JWT
+
+O sistema utiliza **JWT minimalista** contendo apenas o ID do usuário:
+
+```json
+{
+  "id": 15,
+  "iat": 1756120874,
+  "iss": "hitt-api"
+}
+```
+
+**Vantagens:**
+- **Segurança máxima**: Dados sempre atuais do banco
+- **Permissões em tempo real**: Admin rebaixado perde acesso imediatamente
+- **Simplicidade**: JWT contém apenas o essencial
+- **Flexibilidade**: Qualquer mudança no usuário reflete instantaneamente
+
+
+## Sistema de Roles
+
+### Implementação:
+- Campo `role` na tabela users: `['USER', 'ADMIN']`
+- Novos usuários: `role = 'USER'` (padrão)
+- JWT contém apenas ID do usuário
+- Permissões verificadas em tempo real no banco
+
+### Criar primeiro ADMIN:
+```sql
+UPDATE users SET role = 'ADMIN' WHERE email = 'admin@exemplo.com';
+```
+
+### Promover usuário (apenas ADMIN):
+```
+PATCH /user/:id/promote
+Authorization: Bearer {token}
+{
+  "role": "ADMIN"
+}
+```
+
+### Permissões:
+
+**USER:**
+- GET /user/profile
+- PATCH /user
+
+**ADMIN:**
+- Todas as permissões de USER
+- GET /user (listar todos)
+- GET /user/:id
+- PUT /user/:id (completo)
+- PATCH /user/:id (parcial, exceto role)
+- DELETE /user/:id
+- PATCH /user/:id/promote (alterar role)
+- POST /category
+- PUT /category/:id
+- DELETE /category/:id
+
+**Público (sem auth):**
+- POST /user (registro)
+- POST /auth
+- POST /auth/code
+
+**Autenticado (qualquer role):**
+- GET /category
+- GET /category/:id

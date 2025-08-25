@@ -13,6 +13,10 @@ export const errorCodes = {
     CPF_ALREADY_EXISTS: 'CPF_ALREADY_EXISTS',
     DUPLICATE_ENTRY: 'DUPLICATE_ENTRY',
     
+    CATEGORY_NOT_FOUND: 'CATEGORY_NOT_FOUND',
+    CATEGORY_NAME_ALREADY_EXISTS: 'CATEGORY_NAME_ALREADY_EXISTS',
+    FORBIDDEN: 'FORBIDDEN',
+    
     TOKEN_REQUIRED: 'TOKEN_REQUIRED',
     INVALID_TOKEN: 'INVALID_TOKEN',
     EXPIRED_TOKEN: 'EXPIRED_TOKEN',
@@ -26,14 +30,12 @@ export const errorCodes = {
 
 export function createErrorResponse(code, message, field = null) {
     const response = {
-        error: {
-            code,
-            message
-        }
+        code,
+        message
     };
     
     if (field) {
-        response.error.field = field;
+        response.field = field;
     }
     
     return response;
